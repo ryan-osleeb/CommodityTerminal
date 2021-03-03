@@ -69,6 +69,26 @@ def bollinger_band(df):
 	plt.plot(df.Date, lower)
 	plt.show()
 
+def support_line(df, i):
+	support = df.Low[i] < df.Low[i-1] and df.Low[i] < df.Low[i+1] and df.Low[i-1] < df.Low[i-2] and df.Low[i+1] < df.Low[i+2]
+	return support
+
+def resistance_line(df, i):
+	resistance = df.High[i] > df.High[i-1] and df.High[i] > df.High[i+1] and df.High[i-1] > df.High[i-2] and df.High[i+1] > df.High[i+2]
+	return resistance
+
+def sup_res(df):
+	levels = []
+	for i in range(2,len(df.Settle)-2):
+		if support_line(df, i):
+			levels.append((i, df.Low[i]))
+		elif resistance_line(df, i):
+			levels.append((i, df.High[i]))
+	for level in levels:
+		plt.hlines(level[1], xmin=df.Date[level[0]],\
+               xmax=max(df.Date),colors='green')
+	plt.plot(df.Settle)
+	plt.show()
 
 def technical_summary(df):
 	#bollinger bands
