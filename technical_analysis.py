@@ -8,18 +8,20 @@ def macd(df):
 	exp2 = df.Settle.ewm(span = 26, adjust = False).mean()
 	macd = exp1 - exp2
 	exp3 = macd.ewm(span = 9, adjust = False).mean()
-	pd.plotting.register_matplotlib_converters()
-	plt.plot(df.Date, macd)
-	plt.plot(df.Date, exp3)
-	plt.show()
+	return macd, exp3
+	# pd.plotting.register_matplotlib_converters()
+	# plt.plot(df.Date, macd)
+	# plt.plot(df.Date, exp3)
+	# plt.show()
 
 def moving_avgs(df, days):
 	sma = df.Settle.rolling(window = days).mean()
 	sma = sma.replace(np.nan, np.mean(df.Settle))
-	pd.plotting.register_matplotlib_converters()
-	plt.plot(df.Date, df.Settle)
-	plt.plot(df.Date, sma)
-	plt.show()
+	return sma
+	# pd.plotting.register_matplotlib_converters()
+	# plt.plot(df.Date, df.Settle)
+	# plt.plot(df.Date, sma)
+	# plt.show()
 
 def rsi(df):
 	gains = []
@@ -32,7 +34,7 @@ def rsi(df):
 		else:
 			losses.append(abs(change))
 			gains.append(0)
-	RSI = []
+	RSI = [30] * 15
 	for i in range(len(gains)-14):
 		avg_gain = np.mean(gains[i:i+14])
 		avg_loss = np.mean(losses[i:i+14])
@@ -41,33 +43,36 @@ def rsi(df):
 		RSI.append(rsi)
 	oversold = [30] * len(RSI)
 	overbought = [70] * len(RSI)
-	pd.plotting.register_matplotlib_converters()
-	plt.plot(df.Date[15:], RSI)
-	plt.plot(df.Date[15:], oversold)
-	plt.plot(df.Date[15:], overbought)
-	plt.show()
+	return RSI
+	# pd.plotting.register_matplotlib_converters()
+	# plt.plot(df.Date[15:], RSI)
+	# plt.plot(df.Date[15:], oversold)
+	# plt.plot(df.Date[15:], overbought)
+	# plt.show()
 
 def stoch(df):
 	low = df.Settle.rolling(window = 14).min()
 	high = df.Settle.rolling(window = 14).max()
 	K = 100*((df.Settle-low)/(high-low))
 	D = K.rolling(window = 3).mean()
-	pd.plotting.register_matplotlib_converters()
-	plt.plot(df.Date, K)
-	plt.plot(df.Date, D)
-	plt.show()
+	return K, D
+	# pd.plotting.register_matplotlib_converters()
+	# plt.plot(df.Date, K)
+	# plt.plot(df.Date, D)
+	# plt.show()
 
 def bollinger_band(df):
 	avg = df.Settle.rolling(window = 20).mean()
 	std = df.Settle.rolling(window = 20).std()
 	upper = avg + (2 * std)
 	lower = avg - (2 * std)
-	pd.plotting.register_matplotlib_converters()
-	plt.plot(df.Date, df.Settle)
-	plt.plot(df.Date, avg)
-	plt.plot(df.Date, upper)
-	plt.plot(df.Date, lower)
-	plt.show()
+	return avg, upper, lower
+	# pd.plotting.register_matplotlib_converters()
+	# plt.plot(df.Date, df.Settle)
+	# plt.plot(df.Date, avg)
+	# plt.plot(df.Date, upper)
+	# plt.plot(df.Date, lower)
+	# plt.show()
 
 def support_line(df, i):
 	support = df.Low[i] < df.Low[i-1] and df.Low[i] < df.Low[i+1] and df.Low[i-1] < df.Low[i-2] and df.Low[i+1] < df.Low[i+2]
@@ -84,11 +89,11 @@ def sup_res(df):
 			levels.append((i, df.Low[i]))
 		elif resistance_line(df, i):
 			levels.append((i, df.High[i]))
-	for level in levels:
-		plt.hlines(level[1], xmin=df.Date[level[0]],\
-               xmax=max(df.Date),colors='green')
-	plt.plot(df.Settle)
-	plt.show()
+	# for level in levels:
+	# 	plt.hlines(level[1], xmin=df.Date[level[0]],\
+ #               xmax=max(df.Date),colors='green')
+	# plt.plot(df.Settle)
+	# plt.show()
 
 def technical_summary(df):
 	#bollinger bands
